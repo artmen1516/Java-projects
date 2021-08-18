@@ -44,8 +44,8 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
-              <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -56,21 +56,29 @@
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jComboBox_comPort" max="32767" attributes="0"/>
-                                  <Component id="jToggleButton_open" pref="95" max="32767" attributes="0"/>
+                                  <Component id="jToggleButton_open" pref="94" max="32767" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jButton_send" min="-2" pref="200" max="-2" attributes="0"/>
-                                  <Component id="jTextField_sendData" min="-2" pref="200" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="jButton_send" pref="200" max="32767" attributes="0"/>
+                                  <Component id="jTextField_sendData" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jButton_clear" pref="77" max="32767" attributes="0"/>
-                                  <Component id="jComboBox_endOfLine" max="32767" attributes="0"/>
+                                  <Component id="jButton_clear" pref="78" max="32767" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Component id="jTextField_stx" min="-2" pref="29" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="jTextField_etx" max="32767" attributes="0"/>
+                                  </Group>
                               </Group>
                           </Group>
                           <Group type="102" attributes="0">
@@ -78,7 +86,7 @@
                                   <Group type="102" attributes="0">
                                       <Component id="jComboBox_baudRate" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jComboBox_parity" max="32767" attributes="0"/>
+                                      <Component id="jComboBox_parity" pref="102" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
@@ -107,9 +115,10 @@
                       <EmptySpace min="15" pref="15" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jScrollPane1" max="32767" attributes="0"/>
-                          <Group type="102" attributes="0">
-                              <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="jLabel_appOpenedDT" max="32767" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="jLabel_currentPort" min="-2" pref="139" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -122,14 +131,18 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" min="-2" pref="131" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="jLabel_appOpenedDT" max="32767" attributes="0"/>
+                  <Component id="jLabel_currentPort" pref="24" max="32767" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jLabel3" alignment="1" max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jComboBox_endOfLine" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="jTextField_sendData" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
-                  </Group>
+              <Component id="jScrollPane1" min="-2" pref="109" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jTextField_sendData" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                  <Component id="jTextField_stx" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                  <Component id="jTextField_etx" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
+                  <Component id="jLabel3" alignment="3" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -233,6 +246,7 @@
             <StringItem index="0" value="        "/>
           </StringArray>
         </Property>
+        <Property name="selectedIndex" type="int" value="-1"/>
       </Properties>
       <Events>
         <EventHandler event="popupMenuWillBecomeVisible" listener="javax.swing.event.PopupMenuListener" parameters="javax.swing.event.PopupMenuEvent" handler="jComboBox_comPortPopupMenuWillBecomeVisible"/>
@@ -266,11 +280,11 @@
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="5">
-            <StringItem index="0" value="None"/>
-            <StringItem index="1" value="Odd"/>
-            <StringItem index="2" value="Even"/>
-            <StringItem index="3" value="Mark"/>
-            <StringItem index="4" value="Space"/>
+            <StringItem index="0" value="NONE_PARITY"/>
+            <StringItem index="1" value="ODD_PARITY"/>
+            <StringItem index="2" value="EVEN_PARITY"/>
+            <StringItem index="3" value="MARK_PARITY"/>
+            <StringItem index="4" value="SPACE_PARITY"/>
           </StringArray>
         </Property>
       </Properties>
@@ -297,28 +311,12 @@
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="3">
-            <StringItem index="0" value="None"/>
-            <StringItem index="1" value="One"/>
-            <StringItem index="2" value="Two"/>
-          </StringArray>
-        </Property>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
-      </AuxValues>
-    </Component>
-    <Component class="javax.swing.JComboBox" name="jComboBox_endOfLine">
-      <Properties>
-        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="2">
-            <StringItem index="0" value="None"/>
-            <StringItem index="1" value="\r\n"/>
+            <StringItem index="0" value="0"/>
+            <StringItem index="1" value="1"/>
+            <StringItem index="2" value="2"/>
           </StringArray>
         </Property>
         <Property name="selectedIndex" type="int" value="1"/>
-        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[57, 20]"/>
-        </Property>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -330,6 +328,29 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButton_openActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel_appOpenedDT">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel_currentPort">
+      <Properties>
+        <Property name="horizontalAlignment" type="int" value="4"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextField_stx">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="02"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField_stxActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JTextField" name="jTextField_etx">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="03"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField_etxActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
