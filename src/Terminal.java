@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -22,6 +23,8 @@ public class Terminal extends javax.swing.JFrame {
 
     SerialPort SerialPort1;
     OutputStream outputStream1;
+    OutputStream outputStream2;
+    String dataToPrint = "";
     /**
      * Creates new form Terminal
      */
@@ -62,6 +65,8 @@ public class Terminal extends javax.swing.JFrame {
         jLabel_currentPort = new javax.swing.JLabel();
         jTextField_stx = new javax.swing.JTextField();
         jTextField_etx = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextPane_allData = new javax.swing.JTextPane();
 
         jLabel1.setText("jLabel1");
 
@@ -165,6 +170,8 @@ public class Terminal extends javax.swing.JFrame {
             }
         });
 
+        jScrollPane2.setViewportView(jTextPane_allData);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -191,16 +198,16 @@ public class Terminal extends javax.swing.JFrame {
                                     .addComponent(jButton_send, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                                     .addComponent(jTextField_sendData))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton_clear, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jButton_clear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jTextField_stx, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jTextField_etx))))
+                                        .addComponent(jTextField_stx, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jTextField_etx, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jComboBox_baudRate, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jComboBox_baudRate, 0, 63, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jComboBox_parity, 0, 102, Short.MAX_VALUE))
                                     .addGroup(layout.createSequentialGroup()
@@ -221,7 +228,10 @@ public class Terminal extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane2))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel_appOpenedDT, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -236,7 +246,9 @@ public class Terminal extends javax.swing.JFrame {
                     .addComponent(jLabel_appOpenedDT, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel_currentPort, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField_sendData, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -276,21 +288,46 @@ public class Terminal extends javax.swing.JFrame {
         // TODO add your handling code here:
         outputStream1 = SerialPort1.getOutputStream();
         String dataToSend;
+        dataToSend = jTextField_sendData.getText();
         
-        dataToSend = jTextField_stx.getText()+jTextField_sendData.getText()+jTextField_etx.getText();
 
         try{
-            outputStream1.write(jTextField_stx);
+
+            System.out.println("case 2");
+             if(jTextField_stx.getText().length() == 0){
+             }else{
+                 outputStream1.write(Integer.parseInt(jTextField_stx.getText()));
+                 
+                /* byte[] bytesStx = jTextField_stx.getText().getBytes();
+                 dataToPrint += new String(bytesStx,StandardCharsets.UTF_16BE);*/
+                 dataToPrint += String.format("<0x%02X>",Integer.parseInt(jTextField_stx.getText()));
+
+             }
             outputStream1.write(dataToSend.getBytes());
+            dataToPrint += dataToSend;
+            if(jTextField_etx.getText().length() == 0){
+             }else{ 
+                outputStream1.write(Integer.parseInt(jTextField_etx.getText()));
+               /* byte[] bytesEtx = jTextField_etx.getText().getBytes();
+                dataToPrint += new String(bytesEtx,StandardCharsets.UTF_16BE);*/
+               dataToPrint += String.format("<0x%02X>",Integer.parseInt(jTextField_etx.getText()));
+            }
+            
+            dataToPrint += "\r\n";
+            
+            jTextArea_allData.setText(dataToPrint);
+            //jTextPane_allData.setText();
         }
         catch(IOException c){
             JOptionPane.showMessageDialog(this,c,"ERROR",ERROR_MESSAGE);
         }
-        
+                
     }//GEN-LAST:event_jButton_sendActionPerformed
 
     private void jButton_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_clearActionPerformed
         // TODO add your handling code here:
+        jTextArea_allData.setText("");
+        dataToPrint = "";
     }//GEN-LAST:event_jButton_clearActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -300,7 +337,7 @@ public class Terminal extends javax.swing.JFrame {
         jTextField_stx.setEnabled(false);
         jTextField_etx.setEnabled(false);
         //jComboBox_endOfLine.setEnabled(false);
-        jButton_clear.setEnabled(false);
+        //jButton_clear.setEnabled(false);
         
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
@@ -340,7 +377,7 @@ public class Terminal extends javax.swing.JFrame {
                     jTextField_stx.setEnabled(true);
                     jTextField_etx.setEnabled(true);
                     //jComboBox_endOfLine.setEnabled(true);
-                    jButton_clear.setEnabled(true);
+                    //jButton_clear.setEnabled(true);
                     
                     jComboBox_comPort.setEnabled(false);
                     jComboBox_baudRate.setEnabled(false);
@@ -349,7 +386,7 @@ public class Terminal extends javax.swing.JFrame {
                     jComboBox_stopBits.setEnabled(false);
                     jToggleButton_open.setText("Close");
                     jLabel_currentPort.setText(jComboBox_comPort.getSelectedItem().toString() + " Opened ");
-                    jLabel_currentPort.setForeground(Color.red);
+                    jLabel_currentPort.setForeground(Color.BLUE);
                 }
                 else{
                     JOptionPane.showMessageDialog(this,"ERROR TO OPEN " + jComboBox_comPort.getSelectedItem().toString(),"ERROR",ERROR_MESSAGE);
@@ -372,7 +409,7 @@ public class Terminal extends javax.swing.JFrame {
             jTextField_stx.setEnabled(false);
             jTextField_etx.setEnabled(false);
             //jComboBox_endOfLine.setEnabled(false);
-            jButton_clear.setEnabled(false);
+            //jButton_clear.setEnabled(false);
         
             jComboBox_comPort.setEnabled(true);
             jComboBox_baudRate.setEnabled(true);
@@ -446,10 +483,12 @@ public class Terminal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel_appOpenedDT;
     private javax.swing.JLabel jLabel_currentPort;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea jTextArea_allData;
     private javax.swing.JTextField jTextField_etx;
     private javax.swing.JTextField jTextField_sendData;
     private javax.swing.JTextField jTextField_stx;
+    private javax.swing.JTextPane jTextPane_allData;
     private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JToggleButton jToggleButton_open;
     // End of variables declaration//GEN-END:variables
