@@ -10,10 +10,17 @@ import java.time.LocalDateTime;
 import com.fazecast.jSerialComm.SerialPort;
 import java.awt.Color;
 import javax.swing.JOptionPane;
+import javax.swing.JTextPane;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import javax.swing.text.BadLocationException;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,7 +31,7 @@ public class Terminal extends javax.swing.JFrame {
     SerialPort SerialPort1;
     OutputStream outputStream1;
     OutputStream outputStream2;
-    String dataToPrint = "";
+    
     /**
      * Creates new form Terminal
      */
@@ -41,15 +48,7 @@ public class Terminal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea_allData = new javax.swing.JTextArea();
-        jTextField_sendData = new javax.swing.JTextField();
-        jButton_send = new javax.swing.JButton();
-        jButton_clear = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -63,16 +62,27 @@ public class Terminal extends javax.swing.JFrame {
         jToggleButton_open = new javax.swing.JToggleButton();
         jLabel_appOpenedDT = new javax.swing.JLabel();
         jLabel_currentPort = new javax.swing.JLabel();
-        jTextField_stx = new javax.swing.JTextField();
-        jTextField_etx = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextPane_allData = new javax.swing.JTextPane();
-
-        jLabel1.setText("jLabel1");
-
-        jLabel2.setText("jLabel2");
-
-        jToggleButton1.setText("jToggleButton1");
+        jTabbedPane2 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        jTextField_etx = new javax.swing.JTextField();
+        jTextField_stx = new javax.swing.JTextField();
+        jTextField_sendData = new javax.swing.JTextField();
+        jButton_send = new javax.swing.JButton();
+        jButton_clear = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jButton_off = new javax.swing.JButton();
+        jButton_t1 = new javax.swing.JButton();
+        jButton_t2 = new javax.swing.JButton();
+        jButton_t3 = new javax.swing.JButton();
+        jButton_t4 = new javax.swing.JButton();
+        jButton_allOn = new javax.swing.JButton();
+        jButton_pulseT1 = new javax.swing.JButton();
+        jButton_pulseT2 = new javax.swing.JButton();
+        jButton_pulseT3 = new javax.swing.JButton();
+        jButton_pulseT4 = new javax.swing.JButton();
+        jButton_pulseAllOn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SerialPort Terminal");
@@ -81,33 +91,6 @@ public class Terminal extends javax.swing.JFrame {
                 formWindowOpened(evt);
             }
         });
-
-        jTextArea_allData.setEditable(false);
-        jTextArea_allData.setColumns(20);
-        jTextArea_allData.setRows(5);
-        jScrollPane1.setViewportView(jTextArea_allData);
-
-        jTextField_sendData.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField_sendDataActionPerformed(evt);
-            }
-        });
-
-        jButton_send.setText("Send");
-        jButton_send.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_sendActionPerformed(evt);
-            }
-        });
-
-        jButton_clear.setText("Clear");
-        jButton_clear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton_clearActionPerformed(evt);
-            }
-        });
-
-        jLabel3.setText("Send data:");
 
         jLabel4.setText("COM Port:");
 
@@ -139,7 +122,7 @@ public class Terminal extends javax.swing.JFrame {
         jComboBox_baudRate.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200" }));
         jComboBox_baudRate.setSelectedIndex(3);
 
-        jComboBox_parity.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NONE_PARITY", "ODD_PARITY", "EVEN_PARITY", "MARK_PARITY", "SPACE_PARITY" }));
+        jComboBox_parity.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "Odd", "Even", "Mark", "Space" }));
 
         jComboBox_dataBits.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "7", "8", "9" }));
         jComboBox_dataBits.setSelectedIndex(1);
@@ -156,12 +139,8 @@ public class Terminal extends javax.swing.JFrame {
 
         jLabel_currentPort.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 
-        jTextField_stx.setText("02");
-        jTextField_stx.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField_stxActionPerformed(evt);
-            }
-        });
+        jTextPane_allData.setEditable(false);
+        jScrollPane2.setViewportView(jTextPane_allData);
 
         jTextField_etx.setText("03");
         jTextField_etx.addActionListener(new java.awt.event.ActionListener() {
@@ -170,72 +149,242 @@ public class Terminal extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane2.setViewportView(jTextPane_allData);
+        jTextField_stx.setText("02");
+        jTextField_stx.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField_stxActionPerformed(evt);
+            }
+        });
+
+        jTextField_sendData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField_sendDataActionPerformed(evt);
+            }
+        });
+
+        jButton_send.setText("Send");
+        jButton_send.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_sendActionPerformed(evt);
+            }
+        });
+
+        jButton_clear.setText("Clear");
+        jButton_clear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_clearActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField_sendData)
+                    .addComponent(jButton_send, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jTextField_stx, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField_etx, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButton_clear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField_etx, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField_stx, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextField_sendData, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton_send)
+                    .addComponent(jButton_clear))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane2.addTab("Commands", jPanel1);
+
+        jButton_off.setText("OFF");
+        jButton_off.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_offActionPerformed(evt);
+            }
+        });
+
+        jButton_t1.setText("T1");
+        jButton_t1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_t1ActionPerformed(evt);
+            }
+        });
+
+        jButton_t2.setText("T2");
+        jButton_t2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_t2ActionPerformed(evt);
+            }
+        });
+
+        jButton_t3.setText("T3");
+        jButton_t3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_t3ActionPerformed(evt);
+            }
+        });
+
+        jButton_t4.setText("T4");
+        jButton_t4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_t4ActionPerformed(evt);
+            }
+        });
+
+        jButton_allOn.setText("ALL ON");
+        jButton_allOn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_allOnActionPerformed(evt);
+            }
+        });
+
+        jButton_pulseT1.setText("Pulse");
+        jButton_pulseT1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_pulseT1ActionPerformed(evt);
+            }
+        });
+
+        jButton_pulseT2.setText("Pulse");
+        jButton_pulseT2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_pulseT2ActionPerformed(evt);
+            }
+        });
+
+        jButton_pulseT3.setText("Pulse");
+        jButton_pulseT3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_pulseT3ActionPerformed(evt);
+            }
+        });
+
+        jButton_pulseT4.setText("Pulse");
+        jButton_pulseT4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_pulseT4ActionPerformed(evt);
+            }
+        });
+
+        jButton_pulseAllOn.setText("Pulse");
+        jButton_pulseAllOn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_pulseAllOnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton_t1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton_pulseT1))
+                .addGap(10, 10, 10)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton_t2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton_pulseT2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton_t3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton_pulseT3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton_t4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton_pulseT4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton_allOn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton_pulseAllOn, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addComponent(jButton_off)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton_t1)
+                            .addComponent(jButton_t2)
+                            .addComponent(jButton_t3)
+                            .addComponent(jButton_t4)
+                            .addComponent(jButton_allOn))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton_pulseT1)
+                            .addComponent(jButton_pulseT2)
+                            .addComponent(jButton_pulseT3)
+                            .addComponent(jButton_pulseT4)
+                            .addComponent(jButton_pulseAllOn))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jButton_off, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
+        jTabbedPane2.addTab("Plus725 IO ", jPanel2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(32, 32, 32))
-                            .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel_appOpenedDT, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel_currentPort, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jComboBox_comPort, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jToggleButton_open, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel3)
-                                        .addGap(0, 0, Short.MAX_VALUE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jButton_send, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                                    .addComponent(jTextField_sendData))
+                                    .addComponent(jLabel4)
+                                    .addComponent(jComboBox_comPort, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jButton_clear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jTextField_stx, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jTextField_etx, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jComboBox_baudRate, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jComboBox_baudRate, 0, 63, Short.MAX_VALUE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jComboBox_parity, 0, 102, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel5)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel6)
-                                        .addGap(25, 25, 25)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGap(3, 3, 3)
+                                        .addComponent(jLabel6))
+                                    .addComponent(jComboBox_parity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jComboBox_dataBits, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING))
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel8)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel8)
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                    .addComponent(jComboBox_stopBits, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jScrollPane2))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel_appOpenedDT, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel_currentPort, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                        .addComponent(jComboBox_stopBits, 0, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jToggleButton_open)
+                                        .addGap(9, 9, 9))))
+                            .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -246,21 +395,10 @@ public class Terminal extends javax.swing.JFrame {
                     .addComponent(jLabel_appOpenedDT, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel_currentPort, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField_sendData, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_stx, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField_etx, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_clear)
-                    .addComponent(jButton_send)
-                    .addComponent(jToggleButton_open))
-                .addGap(11, 11, 11)
+                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -273,7 +411,8 @@ public class Terminal extends javax.swing.JFrame {
                     .addComponent(jComboBox_dataBits, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jComboBox_parity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jComboBox_baudRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox_comPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jComboBox_comPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jToggleButton_open))
                 .addContainerGap())
         );
 
@@ -287,19 +426,17 @@ public class Terminal extends javax.swing.JFrame {
     private void jButton_sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_sendActionPerformed
         // TODO add your handling code here:
         outputStream1 = SerialPort1.getOutputStream();
+        String dataToPrint = "";
         String dataToSend;
         dataToSend = jTextField_sendData.getText();
-        
+        JTextPane textPane = jTextPane_allData;
+        StyledDocument doc = textPane.getStyledDocument();
 
         try{
 
-            System.out.println("case 2");
              if(jTextField_stx.getText().length() == 0){
              }else{
                  outputStream1.write(Integer.parseInt(jTextField_stx.getText()));
-                 
-                /* byte[] bytesStx = jTextField_stx.getText().getBytes();
-                 dataToPrint += new String(bytesStx,StandardCharsets.UTF_16BE);*/
                  dataToPrint += String.format("<0x%02X>",Integer.parseInt(jTextField_stx.getText()));
 
              }
@@ -308,15 +445,22 @@ public class Terminal extends javax.swing.JFrame {
             if(jTextField_etx.getText().length() == 0){
              }else{ 
                 outputStream1.write(Integer.parseInt(jTextField_etx.getText()));
-               /* byte[] bytesEtx = jTextField_etx.getText().getBytes();
-                dataToPrint += new String(bytesEtx,StandardCharsets.UTF_16BE);*/
                dataToPrint += String.format("<0x%02X>",Integer.parseInt(jTextField_etx.getText()));
             }
             
             dataToPrint += "\r\n";
             
-            jTextArea_allData.setText(dataToPrint);
-            //jTextPane_allData.setText();
+            //jTextArea_allData.setText(dataToPrint);
+            
+            System.out.println("case textPane: " + dataToPrint);
+            Style style = textPane.addStyle("I'm a Style", null);
+            StyleConstants.setForeground(style, Color.MAGENTA);
+            try{
+                doc.insertString(doc.getLength(), dataToPrint, style);
+            } catch (BadLocationException ex) {
+                System.out.println("Bad location");
+            }
+
         }
         catch(IOException c){
             JOptionPane.showMessageDialog(this,c,"ERROR",ERROR_MESSAGE);
@@ -326,8 +470,10 @@ public class Terminal extends javax.swing.JFrame {
 
     private void jButton_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_clearActionPerformed
         // TODO add your handling code here:
-        jTextArea_allData.setText("");
-        dataToPrint = "";
+        
+        //jTextArea_allData.setText("");
+        jTextPane_allData.setText("");
+        //dataToPrint = "";
     }//GEN-LAST:event_jButton_clearActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -338,6 +484,17 @@ public class Terminal extends javax.swing.JFrame {
         jTextField_etx.setEnabled(false);
         //jComboBox_endOfLine.setEnabled(false);
         //jButton_clear.setEnabled(false);
+        jButton_t1.setEnabled(false);
+        jButton_t2.setEnabled(false);
+        jButton_t3.setEnabled(false);
+        jButton_t4.setEnabled(false);
+        jButton_allOn.setEnabled(false);
+        jButton_pulseT1.setEnabled(false);
+        jButton_pulseT2.setEnabled(false);
+        jButton_pulseT3.setEnabled(false);
+        jButton_pulseT4.setEnabled(false);
+        jButton_pulseAllOn.setEnabled(false);
+        jButton_off.setEnabled(false);
         
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
@@ -378,12 +535,26 @@ public class Terminal extends javax.swing.JFrame {
                     jTextField_etx.setEnabled(true);
                     //jComboBox_endOfLine.setEnabled(true);
                     //jButton_clear.setEnabled(true);
+                    jButton_t1.setEnabled(true);
+                    jButton_t2.setEnabled(true);
+                    jButton_t3.setEnabled(true);
+                    jButton_t4.setEnabled(true);
+                    jButton_allOn.setEnabled(true);
+                    jButton_pulseT1.setEnabled(true);
+                    jButton_pulseT2.setEnabled(true);
+                    jButton_pulseT3.setEnabled(true);
+                    jButton_pulseT4.setEnabled(true);
+                    jButton_pulseAllOn.setEnabled(true);
+                    jButton_off.setEnabled(true);
+
                     
                     jComboBox_comPort.setEnabled(false);
                     jComboBox_baudRate.setEnabled(false);
                     jComboBox_parity.setEnabled(false);
                     jComboBox_dataBits.setEnabled(false);
                     jComboBox_stopBits.setEnabled(false);
+                    
+                    
                     jToggleButton_open.setText("Close");
                     jLabel_currentPort.setText(jComboBox_comPort.getSelectedItem().toString() + " Opened ");
                     jLabel_currentPort.setForeground(Color.BLUE);
@@ -410,6 +581,17 @@ public class Terminal extends javax.swing.JFrame {
             jTextField_etx.setEnabled(false);
             //jComboBox_endOfLine.setEnabled(false);
             //jButton_clear.setEnabled(false);
+            jButton_t1.setEnabled(false);
+            jButton_t2.setEnabled(false);
+            jButton_t3.setEnabled(false);
+            jButton_t4.setEnabled(false);
+            jButton_allOn.setEnabled(false);
+            jButton_pulseT1.setEnabled(false);
+            jButton_pulseT2.setEnabled(false);
+            jButton_pulseT3.setEnabled(false);
+            jButton_pulseT4.setEnabled(false);
+            jButton_pulseAllOn.setEnabled(false);
+            jButton_off.setEnabled(false);
         
             jComboBox_comPort.setEnabled(true);
             jComboBox_baudRate.setEnabled(true);
@@ -428,6 +610,235 @@ public class Terminal extends javax.swing.JFrame {
     private void jTextField_etxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_etxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField_etxActionPerformed
+
+    private void jButton_t1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_t1ActionPerformed
+        // TODO add your handling code here:
+        outputStream1 = SerialPort1.getOutputStream();
+        
+        try{
+        outputStream1.write(Integer.parseInt("02"));
+        outputStream1.write("T1".getBytes());
+        outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+        
+    }//GEN-LAST:event_jButton_t1ActionPerformed
+
+    private void jButton_pulseT1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_pulseT1ActionPerformed
+        // TODO add your handling code here:
+        outputStream1 = SerialPort1.getOutputStream();
+
+        try{
+            outputStream1.write(Integer.parseInt("02"));
+            outputStream1.write("T1".getBytes());
+            outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+
+        try {
+            TimeUnit.MILLISECONDS.sleep(500);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Terminal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try{
+            outputStream1.write(Integer.parseInt("02"));
+            outputStream1.write("T0".getBytes());
+            outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton_pulseT1ActionPerformed
+
+    private void jButton_offActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_offActionPerformed
+        // TODO add your handling code here:
+        outputStream1 = SerialPort1.getOutputStream();
+        try{
+            outputStream1.write(Integer.parseInt("02"));
+            outputStream1.write("T0".getBytes());
+            outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton_offActionPerformed
+
+    private void jButton_t2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_t2ActionPerformed
+        // TODO add your handling code here:
+        outputStream1 = SerialPort1.getOutputStream();
+        
+        try{
+        outputStream1.write(Integer.parseInt("02"));
+        outputStream1.write("T2".getBytes());
+        outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton_t2ActionPerformed
+
+    private void jButton_t3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_t3ActionPerformed
+        // TODO add your handling code here:
+        outputStream1 = SerialPort1.getOutputStream();
+        
+        try{
+        outputStream1.write(Integer.parseInt("02"));
+        outputStream1.write("T4".getBytes());
+        outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton_t3ActionPerformed
+
+    private void jButton_t4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_t4ActionPerformed
+        // TODO add your handling code here:
+        outputStream1 = SerialPort1.getOutputStream();
+        
+        try{
+        outputStream1.write(Integer.parseInt("02"));
+        outputStream1.write("T8".getBytes());
+        outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton_t4ActionPerformed
+
+    private void jButton_allOnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_allOnActionPerformed
+        // TODO add your handling code here:
+        outputStream1 = SerialPort1.getOutputStream();
+        
+        try{
+        outputStream1.write(Integer.parseInt("02"));
+        outputStream1.write("TF".getBytes());
+        outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton_allOnActionPerformed
+
+    private void jButton_pulseT2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_pulseT2ActionPerformed
+        // TODO add your handling code here:
+        outputStream1 = SerialPort1.getOutputStream();
+
+        try{
+            outputStream1.write(Integer.parseInt("02"));
+            outputStream1.write("T2".getBytes());
+            outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+
+        try {
+            TimeUnit.MILLISECONDS.sleep(500);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Terminal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try{
+            outputStream1.write(Integer.parseInt("02"));
+            outputStream1.write("T0".getBytes());
+            outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton_pulseT2ActionPerformed
+
+    private void jButton_pulseT3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_pulseT3ActionPerformed
+        // TODO add your handling code here:
+        outputStream1 = SerialPort1.getOutputStream();
+
+        try{
+            outputStream1.write(Integer.parseInt("02"));
+            outputStream1.write("T4".getBytes());
+            outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+
+        try {
+            TimeUnit.MILLISECONDS.sleep(500);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Terminal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try{
+            outputStream1.write(Integer.parseInt("02"));
+            outputStream1.write("T0".getBytes());
+            outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton_pulseT3ActionPerformed
+
+    private void jButton_pulseT4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_pulseT4ActionPerformed
+        // TODO add your handling code here:
+        outputStream1 = SerialPort1.getOutputStream();
+
+        try{
+            outputStream1.write(Integer.parseInt("02"));
+            outputStream1.write("T8".getBytes());
+            outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+
+        try {
+            TimeUnit.MILLISECONDS.sleep(500);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Terminal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try{
+            outputStream1.write(Integer.parseInt("02"));
+            outputStream1.write("T0".getBytes());
+            outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton_pulseT4ActionPerformed
+
+    private void jButton_pulseAllOnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_pulseAllOnActionPerformed
+        // TODO add your handling code here:
+        outputStream1 = SerialPort1.getOutputStream();
+
+        try{
+            outputStream1.write(Integer.parseInt("02"));
+            outputStream1.write("TF".getBytes());
+            outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+
+        try {
+            TimeUnit.MILLISECONDS.sleep(500);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Terminal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try{
+            outputStream1.write(Integer.parseInt("02"));
+            outputStream1.write("T0".getBytes());
+            outputStream1.write(Integer.parseInt("03"));
+        }
+        catch(IOException a){
+            JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton_pulseAllOnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -465,16 +876,24 @@ public class Terminal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton_allOn;
     private javax.swing.JButton jButton_clear;
+    private javax.swing.JButton jButton_off;
+    private javax.swing.JButton jButton_pulseAllOn;
+    private javax.swing.JButton jButton_pulseT1;
+    private javax.swing.JButton jButton_pulseT2;
+    private javax.swing.JButton jButton_pulseT3;
+    private javax.swing.JButton jButton_pulseT4;
     private javax.swing.JButton jButton_send;
+    private javax.swing.JButton jButton_t1;
+    private javax.swing.JButton jButton_t2;
+    private javax.swing.JButton jButton_t3;
+    private javax.swing.JButton jButton_t4;
     private javax.swing.JComboBox<String> jComboBox_baudRate;
     private javax.swing.JComboBox<String> jComboBox_comPort;
     private javax.swing.JComboBox<String> jComboBox_dataBits;
     private javax.swing.JComboBox<String> jComboBox_parity;
     private javax.swing.JComboBox<String> jComboBox_stopBits;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -482,14 +901,15 @@ public class Terminal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel_appOpenedDT;
     private javax.swing.JLabel jLabel_currentPort;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea_allData;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTextField jTextField_etx;
     private javax.swing.JTextField jTextField_sendData;
     private javax.swing.JTextField jTextField_stx;
     private javax.swing.JTextPane jTextPane_allData;
-    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JToggleButton jToggleButton_open;
     // End of variables declaration//GEN-END:variables
 }
