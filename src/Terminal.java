@@ -4,10 +4,12 @@
  * and open the template in the editor.
  */
 
-//import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
 import java.time.format.DateTimeFormatter;  
 import java.time.LocalDateTime;   
 import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortEvent;
+import com.fazecast.jSerialComm.SerialPortDataListener;
 import java.awt.Color;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
@@ -86,6 +88,7 @@ public class Terminal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SerialPort Terminal");
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -398,7 +401,7 @@ public class Terminal extends javax.swing.JFrame {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -418,7 +421,7 @@ public class Terminal extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
     private void jTextField_sendDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_sendDataActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField_sendDataActionPerformed
@@ -437,7 +440,7 @@ public class Terminal extends javax.swing.JFrame {
              if(jTextField_stx.getText().length() == 0){
              }else{
                  outputStream1.write(Integer.parseInt(jTextField_stx.getText()));
-                 dataToPrint += String.format("<0x%02X>",Integer.parseInt(jTextField_stx.getText()));
+                 dataToPrint += hexToAscii(String.format("%02X",Integer.parseInt(jTextField_stx.getText())));
 
              }
             outputStream1.write(dataToSend.getBytes());
@@ -445,7 +448,7 @@ public class Terminal extends javax.swing.JFrame {
             if(jTextField_etx.getText().length() == 0){
              }else{ 
                 outputStream1.write(Integer.parseInt(jTextField_etx.getText()));
-               dataToPrint += String.format("<0x%02X>",Integer.parseInt(jTextField_etx.getText()));
+               dataToPrint += hexToAscii(String.format("%02X",Integer.parseInt(jTextField_etx.getText())));
             }
             
             dataToPrint += "\r\n";
@@ -515,7 +518,18 @@ public class Terminal extends javax.swing.JFrame {
             jComboBox_comPort.addItem(port.getSystemPortName());
         }
     }//GEN-LAST:event_jComboBox_comPortPopupMenuWillBecomeVisible
-
+    
+    private static String hexToAscii(String hexStr) {
+    StringBuilder output = new StringBuilder("");
+    
+    for (int i = 0; i < hexStr.length(); i += 2) {
+        String str = hexStr.substring(i, i + 2);
+        output.append((char) Integer.parseInt(str, 16));
+    }
+    
+    return output.toString();
+    }
+    
     private void jToggleButton_openActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton_openActionPerformed
         // TODO add your handling code here:
         if(jToggleButton_open.isSelected() == true){
@@ -527,6 +541,35 @@ public class Terminal extends javax.swing.JFrame {
                 SerialPort1.setNumDataBits(Integer.parseInt(jComboBox_dataBits.getSelectedItem().toString()));
                 SerialPort1.setNumStopBits(Integer.parseInt(jComboBox_stopBits.getSelectedItem().toString()));
                 SerialPort1.openPort();
+                JTextPane textPane = jTextPane_allData;
+                StyledDocument doc = textPane.getStyledDocument();
+                
+                Style style1 = textPane.addStyle("I'm a Style", null);
+
+                SerialPort1.addDataListener(new SerialPortDataListener() {
+                    @Override
+                    public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_RECEIVED; }
+
+                    @Override
+                    public void serialEvent(SerialPortEvent event)
+                    {
+                       String dataIn = "";
+                       byte[] newData = event.getReceivedData();
+                       //System.out.println("Received data of size: " + newData.length);
+                       for (int i = 0; i < newData.length; ++i)
+                          //System.out.print((char)newData[i]);
+                          dataIn += (char)newData[i];
+                       System.out.println("\n");
+                    
+                    StyleConstants.setForeground(style1, Color.BLUE);
+                    try{
+                        doc.insertString(doc.getLength(), dataIn + "\n", style1);
+                    } catch (BadLocationException ex) {
+                        System.out.println("Bad location");
+                    }
+                    
+                    }   
+                    });
                 
                 if(SerialPort1.isOpen()){
                     jButton_send.setEnabled(true);
@@ -558,6 +601,7 @@ public class Terminal extends javax.swing.JFrame {
                     jToggleButton_open.setText("Close");
                     jLabel_currentPort.setText(jComboBox_comPort.getSelectedItem().toString() + " Opened ");
                     jLabel_currentPort.setForeground(Color.BLUE);
+                   
                 }
                 else{
                     JOptionPane.showMessageDialog(this,"ERROR TO OPEN " + jComboBox_comPort.getSelectedItem().toString(),"ERROR",ERROR_MESSAGE);
@@ -658,7 +702,7 @@ public class Terminal extends javax.swing.JFrame {
     private void jButton_offActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_offActionPerformed
         // TODO add your handling code here:
         outputStream1 = SerialPort1.getOutputStream();
-        try{
+        try{ 
             outputStream1.write(Integer.parseInt("02"));
             outputStream1.write("T0".getBytes());
             outputStream1.write(Integer.parseInt("03"));
