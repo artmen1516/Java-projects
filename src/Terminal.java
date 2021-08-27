@@ -4,13 +4,16 @@
  * and open the template in the editor.
  */
 
-import com.formdev.flatlaf.FlatDarkLaf;
+//import com.formdev.flatlaf.FlatLightLaf;
 import java.time.format.DateTimeFormatter;  
 import java.time.LocalDateTime;   
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.text.StyledDocument;
@@ -23,6 +26,7 @@ import javax.swing.text.BadLocationException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.text.DefaultCaret;
 
 /**
  *
@@ -38,9 +42,11 @@ public class Terminal extends javax.swing.JFrame {
      * Creates new form Terminal
      */
     public Terminal() {
+        //FlatLightLaf.setup();
         initComponents();
     }
 
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -88,7 +94,6 @@ public class Terminal extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SerialPort Terminal");
-        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -126,6 +131,11 @@ public class Terminal extends javax.swing.JFrame {
         jComboBox_baudRate.setSelectedIndex(3);
 
         jComboBox_parity.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "Odd", "Even", "Mark", "Space" }));
+        jComboBox_parity.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox_parityActionPerformed(evt);
+            }
+        });
 
         jComboBox_dataBits.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "7", "8", "9" }));
         jComboBox_dataBits.setSelectedIndex(1);
@@ -164,6 +174,11 @@ public class Terminal extends javax.swing.JFrame {
                 jTextField_sendDataActionPerformed(evt);
             }
         });
+        jTextField_sendData.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextField_sendDataKeyPressed(evt);
+            }
+        });
 
         jButton_send.setText("Send");
         jButton_send.addActionListener(new java.awt.event.ActionListener() {
@@ -185,16 +200,16 @@ public class Terminal extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jTextField_sendData)
-                    .addComponent(jButton_send, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE))
+                    .addComponent(jButton_send, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jTextField_stx, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextField_etx, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton_clear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton_clear, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -205,10 +220,10 @@ public class Terminal extends javax.swing.JFrame {
                     .addComponent(jTextField_etx, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField_stx, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextField_sendData, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton_send)
-                    .addComponent(jButton_clear))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton_clear)
+                    .addComponent(jButton_send))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -249,42 +264,42 @@ public class Terminal extends javax.swing.JFrame {
             }
         });
 
-        jButton_allOn.setText("ALL ON");
+        jButton_allOn.setText("A ON");
         jButton_allOn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_allOnActionPerformed(evt);
             }
         });
 
-        jButton_pulseT1.setText("Pulse");
+        jButton_pulseT1.setText("P");
         jButton_pulseT1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_pulseT1ActionPerformed(evt);
             }
         });
 
-        jButton_pulseT2.setText("Pulse");
+        jButton_pulseT2.setText("P");
         jButton_pulseT2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_pulseT2ActionPerformed(evt);
             }
         });
 
-        jButton_pulseT3.setText("Pulse");
+        jButton_pulseT3.setText("P");
         jButton_pulseT3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_pulseT3ActionPerformed(evt);
             }
         });
 
-        jButton_pulseT4.setText("Pulse");
+        jButton_pulseT4.setText("P");
         jButton_pulseT4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_pulseT4ActionPerformed(evt);
             }
         });
 
-        jButton_pulseAllOn.setText("Pulse");
+        jButton_pulseAllOn.setText("P");
         jButton_pulseAllOn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_pulseAllOnActionPerformed(evt);
@@ -297,34 +312,35 @@ public class Terminal extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton_t1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton_pulseT1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton_t1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton_pulseT1))
+                    .addComponent(jButton_pulseT2, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton_t2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(10, 10, 10)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton_t2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton_pulseT2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton_t3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton_pulseT3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton_t4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton_pulseT4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton_t3, javax.swing.GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE)
+                    .addComponent(jButton_pulseT3, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton_t4, javax.swing.GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE)
+                    .addComponent(jButton_pulseT4, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton_allOn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton_pulseAllOn, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                    .addComponent(jButton_allOn, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton_pulseAllOn, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton_off)
-                .addContainerGap())
+                .addGap(28, 28, 28))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jButton_off, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton_t1)
@@ -338,10 +354,8 @@ public class Terminal extends javax.swing.JFrame {
                             .addComponent(jButton_pulseT2)
                             .addComponent(jButton_pulseT3)
                             .addComponent(jButton_pulseT4)
-                            .addComponent(jButton_pulseAllOn))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jButton_off, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                            .addComponent(jButton_pulseAllOn))))
+                .addGap(11, 11, 11))
         );
 
         jTabbedPane2.addTab("Plus725 IO ", jPanel2);
@@ -358,22 +372,22 @@ public class Terminal extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel_currentPort, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel4)
-                                    .addComponent(jComboBox_comPort, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jComboBox_comPort, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel5)
                                     .addComponent(jComboBox_baudRate, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(3, 3, 3)
+                                        .addGap(13, 13, 13)
                                         .addComponent(jLabel6))
-                                    .addComponent(jComboBox_parity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jComboBox_parity, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jComboBox_dataBits, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -382,13 +396,12 @@ public class Terminal extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel8)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jComboBox_stopBits, 0, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jToggleButton_open)
-                                        .addGap(9, 9, 9))))
-                            .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                                        .addComponent(jComboBox_stopBits, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jToggleButton_open))))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap())
+                    .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -398,9 +411,9 @@ public class Terminal extends javax.swing.JFrame {
                     .addComponent(jLabel_appOpenedDT, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel_currentPort, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -419,6 +432,8 @@ public class Terminal extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        getAccessibleContext().setAccessibleDescription("");
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
@@ -431,25 +446,39 @@ public class Terminal extends javax.swing.JFrame {
         outputStream1 = SerialPort1.getOutputStream();
         String dataToPrint = "";
         String dataToSend;
+        int stx = 0;
+        int etx = 0;
         dataToSend = jTextField_sendData.getText();
         JTextPane textPane = jTextPane_allData;
         StyledDocument doc = textPane.getStyledDocument();
+        DefaultCaret caret = (DefaultCaret)textPane.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
         try{
 
              if(jTextField_stx.getText().length() == 0){
              }else{
-                 outputStream1.write(Integer.parseInt(jTextField_stx.getText()));
+                 //outputStream1.write(Integer.parseInt(jTextField_stx.getText()));
+                 stx = Integer.parseInt(jTextField_stx.getText());
                  dataToPrint += hexToAscii(String.format("%02X",Integer.parseInt(jTextField_stx.getText())));
-
              }
-            outputStream1.write(dataToSend.getBytes());
+            // outputStream1.write(dataToSend.getBytes());
             dataToPrint += dataToSend;
             if(jTextField_etx.getText().length() == 0){
              }else{ 
-                outputStream1.write(Integer.parseInt(jTextField_etx.getText()));
-               dataToPrint += hexToAscii(String.format("%02X",Integer.parseInt(jTextField_etx.getText())));
+                //outputStream1.write(Integer.parseInt(jTextField_etx.getText()));
+                etx = Integer.parseInt(jTextField_etx.getText());
+                dataToPrint += hexToAscii(String.format("%02X",Integer.parseInt(jTextField_etx.getText())));
             }
+            
+            byte[] c = new byte[String.valueOf(stx).getBytes().length + dataToSend.getBytes().length + String.valueOf(etx).getBytes().length];
+            System.arraycopy(String.valueOf(stx).getBytes(), 0, c, 0, String.valueOf(stx).getBytes().length);
+            System.arraycopy(dataToSend.getBytes(), 0, c, String.valueOf(stx).getBytes().length, dataToSend.getBytes().length);
+            System.arraycopy(String.valueOf(etx).getBytes(), 0, c, String.valueOf(stx).getBytes().length + dataToSend.getBytes().length, String.valueOf(etx).getBytes().length);
+            
+            //outputStream1.write(String.valueOf(stx).getBytes());
+            outputStream1.write(c);
+            //outputStream1.write(String.valueOf(etx).getBytes());
             
             dataToPrint += "\r\n";
             
@@ -503,6 +532,14 @@ public class Terminal extends javax.swing.JFrame {
         LocalDateTime now = LocalDateTime.now();
         jLabel_appOpenedDT.setText("Application started at " + dtf.format(now) + "\r\n");
         
+        addComponentListener(new ComponentAdapter() {
+        @Override
+        public void componentResized(ComponentEvent e) {
+            int preferredWidth = 430;
+            setSize(new Dimension(preferredWidth, getHeight()));
+            super.componentResized(e);
+        }
+        });
         
     }//GEN-LAST:event_formWindowOpened
 
@@ -543,6 +580,8 @@ public class Terminal extends javax.swing.JFrame {
                 SerialPort1.openPort();
                 JTextPane textPane = jTextPane_allData;
                 StyledDocument doc = textPane.getStyledDocument();
+                DefaultCaret caret = (DefaultCaret)textPane.getCaret();
+                caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
                 
                 Style style1 = textPane.addStyle("I'm a Style", null);
 
@@ -558,12 +597,12 @@ public class Terminal extends javax.swing.JFrame {
                        //System.out.println("Received data of size: " + newData.length);
                        for (int i = 0; i < newData.length; ++i)
                           //System.out.print((char)newData[i]);
-                          dataIn += (char)newData[i];
-                       System.out.println("\n");
+                        dataIn += (char)newData[i];
+                        //System.out.println("\n");
                     
                     StyleConstants.setForeground(style1, Color.BLUE);
                     try{
-                        doc.insertString(doc.getLength(), dataIn + "\n", style1);
+                        doc.insertString(doc.getLength(), dataIn + "\r\n", style1);
                     } catch (BadLocationException ex) {
                         System.out.println("Bad location");
                     }
@@ -883,6 +922,17 @@ public class Terminal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this,a,"ERROR",ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton_pulseAllOnActionPerformed
+
+    private void jComboBox_parityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox_parityActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox_parityActionPerformed
+
+    private void jTextField_sendDataKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField_sendDataKeyPressed
+        // TODO add your handling code here:
+        if(evt.getKeyCode() == 10) {
+            jButton_send.doClick();
+        }
+    }//GEN-LAST:event_jTextField_sendDataKeyPressed
 
     /**
      * @param args the command line arguments
